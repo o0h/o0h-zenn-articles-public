@@ -1,0 +1,36 @@
+title: "PHPによるFWを用いたアプリケーション開発再入門 w/CakePHP4"
+summary: |-
+  いわゆるMVCフレームワーク(FW)を用いたアプリケーション開発経験者向けに、「最近の事情」を加味した開発の勘所をつまみ喰いするための再入門です。
+
+  FW上にアプリケーションを構築することができて、PHPも苦労なく読み書きできている・・・一方で、(何らかの事情により?)最近の書き方やよく見かける仕組みについては分かっていない！！といった人たちが、今日のFWや作り方に影響を与えている要因などにも目を向けながら、FWを用いたアプリケーション開発に”再”入門できることが本書の狙いです。
+  題材としてはCakePHPを利用します。公式チュートリアルを独力で難なくこなせるようなレベルを想定し、「ただ表面的にFW(CakePHP)を使うだけなら無くても良いが、知っておくことで本質的な理解を助けてくれそうな話」を展開していきます。
+
+topics: ["PHP", "CakePHP", "PSR"]
+published: false
+price: 500
+toc_depth: 2
+chapters:
+  - 1.introduction
+  - 2.setup-dev-env
+  - 3.hello-cakephp
+  - 4.psr4-with-cakephp
+  - 5.about-composer
+  - 6.about-psr-and-phpfig
+  - 7.psr7-with-cakephp
+  - 8.psr15-with-cakephp
+  - 9.psr11-with-cakephp
+  - 10.psr-in-cakephp
+  - 11.cake-orm
+  - 12.cake-console
+  - 13.logs
+  - 14.cakephp-repository-strategy
+  - 15.phpunit-with-cakephp
+  - 16.qatools-with-cakephp
+  - 17.fixture-patterns
+  - 18.latest-php-feature
+  - 19.developer-tools-in-or-with-cakephp
+  - 20.to-up-to-date-continuously
+  - auth
+  - plugins
+  - security
+  - view
