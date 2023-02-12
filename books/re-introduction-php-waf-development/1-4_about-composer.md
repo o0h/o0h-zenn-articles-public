@@ -1,4 +1,4 @@
 ---
-title: "1-4 Comopserの使い方と仕組み"
+title: "4章 Comopserの使い方と仕組み"
 free: true
 ---

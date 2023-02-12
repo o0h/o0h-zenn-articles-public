@@ -1,4 +1,4 @@
 ---
-title: "2-1 PSR-7: HTTP messageとCakePHPのリクエスト、レスポンス"
+title: "5章 PSR-7: HTTP messageとCakePHPのリクエスト、レスポンス"
 free: true
 ---

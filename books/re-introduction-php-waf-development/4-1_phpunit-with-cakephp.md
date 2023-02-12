@@ -1,4 +1,4 @@
 ---
-title: "4-1 PHPUnitとCakePHPのテスト"
+title: "14章 PHPUnitとCakePHPのテスト"
 free: true
 ---

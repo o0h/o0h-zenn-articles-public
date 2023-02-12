@@ -1,4 +1,4 @@
 ---
-title: "1-2 まずはCakePHPを動かしてみる"
+title: "2章 まずはCakePHPを動かしてみる"
 free: true
 ---

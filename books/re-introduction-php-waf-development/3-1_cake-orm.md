@@ -1,4 +1,4 @@
 ---
-title: "3-1 CakePHPのORM"
+title: "8章 CakePHPのORM"
 free: true
 ---
