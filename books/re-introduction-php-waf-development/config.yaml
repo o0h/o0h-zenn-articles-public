@@ -11,22 +11,27 @@ price: 500
 toc_depth: 2
 chapters:
   - 0-1_introduction
+  - 1-0_cover
   - 1-1_setup-dev-env
   - 1-2_hello-cakephp
   - 1-3_psr4-with-cakephp
   - 1-4_about-composer
   - C-1_about-psr-and-phpfig
+  - 2-0_cover
   - 2-1_psr7-with-cakephp
   - 2-2_psr15-with-cakephp
   - 2-3_psr11-with-cakephp
   - C-2_psr-in-cakephp
+  - 3-0_cover
   - 3-1_cake-orm
   - 3-2_cake-console
   - 3-3_logs
   - C-3_cakephp-repository-strategy
+  - 4-0_cover
   - 4-1_phpunit-with-cakephp
   - 4-2_qatools-with-cakephp
   - C-4_fixture-patterns
+  - 5-0_cover
   - 5-1_latest-php-feature
   - 5-2_developer-tools-in-or-with-cakephp
   - C-5_to-up-to-date-continuously
