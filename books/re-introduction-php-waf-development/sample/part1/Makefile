@@ -1,6 +1,5 @@
 .PHONY: default help init up down sh ps logs php-lint
-PROJECT_NAME := reintroduction-php-fw-app
-DOCKER_COMMAND := COMPOSE_PROJECT_NAME=$(PROJECT_NAME) docker compose -f .runtime/docker-compose.yml
+DOCKER_COMMAND := docker compose -f .runtime/compose.yml
 
 
 default: init up
@@ -12,7 +11,7 @@ help: ## 今表示している内容を表示します
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 init: ## ローカル開発に必要なサービスのセットアップを行います
-	docker-compose -f .runtime/docker-compose.yml build
+	${DOCKER_COMMAND} build
 	cd app; ${DOCKER_COMMAND} run --rm -e XDEBUG_MODE=off app composer install --no-interaction
 
 up: ## ローカル開発環境(のサーバー)を立ち上げます
