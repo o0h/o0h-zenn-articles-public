@@ -1,5 +1,5 @@
 ---
-title: "4章 の使い方と仕組み"
+title: "4章 Composerの使い方と仕組み"
 free: true
 ---
 
@@ -7,13 +7,140 @@ free: true
 
 既に本書でも説明なしに利用していますが、ComposerとはPHPのパッケージ管理ツールです。その主な仕事は、「パッケージの管理」「オートローダーの提供」「タスクランナー」の3つに分けられます。
 
-前章でPSR-4の話にふれているので、まずはオートローダーについてComposerが果たす役割・機能を説明します。
+前章で説明したPSR-4も、クラス(ファイル)のオートローディングに関する規約です。そこで、主要な3つの機能の内、まずは「オートローダーの提供」についてComposerが果たす役割・機能を説明します。
 
 # 主な機能1: オートローダーの提供
 
+PHPでは、同一ファイル中に定義されているクラスや、読み込み(ロード)済みの他のファイルに定義されているクラスは事由に利用することが出来ます。そのためには、require(once)やincludeを利用することになります。これは、クラスだけではなく、インターフェイス・トレイト・列挙型・定数・関数についても同様です。
+しかしながら、依存しているクラス等の要素を、ファイルごとに明示的な読み込み命令を記述していくけば、どんどんとコードが煩雑になっていきます。リファクタリングによってクラス名やファイル名が変更される度に影響箇所が多くなるのも、メンテナンス性を下げるでしょう。かといって、アプリケーションの起動時(bootstrap処理やフロントコントローラーにて)に全てのファイルを読み込んでおくのも冗長な感じがします。
+「必要なタイミングで必ず明示的にファイルをロードするのが煩わしい」「先行的に読み込むのではなく遅延読み込みによって未ロードのクラスを解決したい」という要求が生じます。これを叶えるために、PHPはクラスのオートローディングの機能を提供します。
+
+オートローディングとは、「クラスを使おうとして、見つからなかった時に、特定のルールに従って、使おうとしたクラスの定義されているファイルの読み込みを試みて補完する」というものです。この「特定のルール」を定義するのが、**オートローダー**です。
+php.netの記述では、 _オートローダーを登録すれば、PHPがエラーで止まる前にクラスをロードする最後の チャンスが与えられます_ と説明されています。すなわち、_Class "XXX" not found_ というErrorを発生させる前に、オートローダーによるファイルの読み込みを試みます。それによってクラスの解決が実現されれば、Errorは発生しないということです。
+
+https://www.php.net/manual/ja/language.oop5.autoload.php
+
+それでは、Composerが提供するオートローダーとは、どのような機能を持っているのでしょうか？少し具体的に見ていきましょう。
+
+なお、本章ではこれ以降、特に言及がない場合には「クラス」といった場合に「クラス(class)」「インターフェイス(interface)」「トレイト(trait)」「列挙型(enum)」といったオートローディングによる解決が可能な要素を指すものとします。
+
+## Composerのオートローダー
+
+Composerを利用するプロジェクトでは、次のようなコードスニペットに見覚えのある方も多いのではないでしょうか。
+
+```php
+require __DIR__ . '/vendor/autoload.php';
+```
+
+これがまさに、「Comopserの提供するオートローダーを利用する」ための処理です。
+この場では詳細は割愛しますが、掻い摘んで説明すると「Composerの作成したオートローディング用のルールを読み込む」「読み込んだルールでオートローディングが実行されるように `spl_autoload_register()` で登録する」「遅延読み込みではなく先行読み込みが必要なファイルをその場で読み込む」という処理が行われています。
+
+https://www.php.net/manual/ja/function.spl-autoload-register.php
+
+### dump-autoloadコマンド
+
+各種設定に沿って、(オートローディング用の設定を含む)オートローダーを生成するのが_dump-autoload_コマンドです。これは、`vendor/autoload.php` とそこから参照されるクラスマップ等のファイルを生成します。 `composer dump-autoload`と打つことで実行されます[^dumpautoload]。実際には、パッケージの更新やインストールを伴う他のコマンド(`require`や`install`、`update`など)の`post-install`フェーズでオートローダーの生成が自動的に行われるため、直接このコマンドを利用することは少ないかも知れません。
+
+このコマンドには、いくつかのオプションがあります。
+
+* `--optimize`
+  * PSR-0/PSR-4形式の対応パッケージについても、静的なクラスマップを生成して利用するためのオプションです。これにより、指定ディレクトリ以下を動的に探索する処理を省略して、「クラス名=>ファイルパス」という形式の連想配列で指定されたクラスマップからオートローディングを実行可能になります。オートローダーの生成には多少の時間を要することになりますが、プロダクション環境などの、パフォーマンス向上を見込みたい環境での利用が見込まれています
+* `--classmap-authoritative`
+  * 静的なクラスマップ以外からのクラス名の解決を行わないようにするためのオプションです。PSR-0/PSR-4形式のオートローディングを利用しない場合には、このオプションによって無用な処理を端折ることができます。また、`--optimize`オプションを利用した場合には、理論的に「クラスマップを調べるだけで全てのクラスが解決される」状態になるため、`--classmap-authoritative`を利用したのに似た挙動となります(両方のオプションを同時に利用することも可能です)
+* `--apcu`
+  * (動的に)探索されたクラスとファイルパスの対応情報や、あるいは解決できなかったクラスの情報をAPCu上にキャッシュするためのオプションです。通常、静的なクラスマップ以外の「クラスと対応ファイルのパス」「解決できなかったファイル」はプロセスごとに保持されるため、Webリクエスト1回ごとに揮発することになります。`--apcu`オプションを有効にすることで、複数のリクエストにまたいで探索結果が再利用可能になるため、パフォーマンスの向上が見込まれます。また、APCuへの読み書きを行う際には、キー名にランダムなプリフィックスが付与されることになります[^apcu-prefix]。この値は、`dump-autoload`コマンド実行の際に生成されて`autoload_real.php`ファイル上で指定されるため、アプリケーションコードのデプロイ時にAPCuキャッシュをパージしなくても安全に動作する設計になっています。
+
+その他のオプションについては、公式ドキュメントを参照してください。
+
+https://getcomposer.org/doc/03-cli.md#dump-autoload-dumpautoload
+
+
+
+[^dumpautoload]: `dump-autoload`以外にも、エイリアスとして`dumpautoload`が設定されています。そのため、`comopser dumpautoload`でも実行が可能です
+[^apcu-prefix]: `--apcu-prefix`オプションを指定することで、APCu利用時に付与するプリフィックスを明示的に指定することも可能です
+
+### サポートするオートローディング・ファイル読み込み(先行読み込み)
+
+Composerはいくつかのタイプでファイルの読み込み・オートローディングをサポートしています。
+これらは全て、`composer.json`中の`autoload`フィールドで定義されるものです。
+
+https://getcomposer.org/doc/04-schema.md#autoload
+
+現時点では、以下の4つのタイプが定義されています
+
+1. PSR-4
+2. PSR-0
+3. Classmap
+4. Files
+
+最終的には、ルートパッケージ(`composer install`などを実行する際に直接読み込まれる`comopser.json`で定義されているパッケージ)中のautoloadフィールドと、直接・間接的に依存されるautoloadフィールドの設定をマージしたものが、`vendor/composer.json`とそこから読み込まれるファイルに反映されます。
+
+それぞれの1つずつ見ていきましょう。
+
+#### PSR-4
+
+名前の通り、PSR-4の規約に沿った形で設置されているクラスをオートロードしていくための設定です。
+PSR-4のオートローディングを利用するためには、対象のパッケージを「名前空間のプリフィックス」「パッケージルートへの相対パス」のkey-valueペアで指定していきます。(PSR-4そのものについての説明は、前章を参照してください)
+先頭の`\`は無し、末尾の`\`は含めて指定します。また、JSONファイル内での記述となるために`\`のエスケープが必要となり、`\\`で単一の`\`を表すことにも注意してください。
+
+例えば、CakePHPのAppスケルトンでは、以下のように指定されています。
+
+```json
+{
+  "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Test\\": "tests/",
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
+        }
+    }
+}
+```
+
+これにより、 `App\Controller\PagesController`を利用した際に`__DIR__ . _src/Controller/PagesController.php`が、`App\Test\TestCase\Controller\PagesControllerTest`を利用した際に`__DIR__ . tests/TestCase/Controller/PagesControllerTest.php`を自動的読み込めるよになるのです。
+
+PSR-4のフィールドに指定された名前空間プリフィックスとパッケージのルートディレクトリの対応情報は、`vendor/composer/autoload_psr4.php`ファイル内に書き出されます。
+以下にサンプルを示します。(おおよそのイメージを共有することが目的のため、実際のファイルから内容を改変しています)
+
+```php
+<?php
+
+// autoload_psr4.php @generated by Composer
+
+$vendorDir = dirname(__DIR__);
+$baseDir = dirname($vendorDir);
+
+return array(
+    'Twig\\Extra\\Markdown\\' => array($vendorDir . '/twig/markdown-extra'),
+    'Twig\\' => array($vendorDir . '/twig/twig/src'),
+    'Symfony\\Polyfill\\Php81\\' => array($vendorDir . '/symfony/polyfill-php81'),
+    'Symfony\\Polyfill\\Php73\\' => array($vendorDir . '/symfony/polyfill-php73'),
+    'Psr\\SimpleCache\\' => array($vendorDir . '/psr/simple-cache/src'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
+    'Psr\\Http\\Server\\' => array($vendorDir . '/psr/http-server-handler/src', $vendorDir . '/psr/http-server-middleware/src'),
+    'Composer\\' => array($vendorDir . '/composer/composer/src/Composer'),
+    'Cake\\Composer\\' => array($vendorDir . '/cakephp/plugin-installer/src'),
+    'Cake\\Chronos\\' => array($vendorDir . '/cakephp/chronos/src'),
+    'Cake\\' => array($vendorDir . '/cakephp/cakephp/src'),
+    'App\\Test\\' => array($baseDir . '/tests'),
+    'App\\' => array($baseDir . '/src'),
+);
+
+```
+
+
+
+#### PSR-0
+
+  
+
 # 主な機能2: パッケージの管理
 
-* require
+* require 
 * install
 * update
   * --with
