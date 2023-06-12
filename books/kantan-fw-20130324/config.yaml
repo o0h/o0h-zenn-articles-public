@@ -1,0 +1,67 @@
+title: "PHPによるフレームワーク開発入門[WIP]"
+summary: |-
+  ※このbookは、著者がPHPerKaigi2023での発表にあたって考察・研究した内容をベースにしています。
+  https://fortee.jp/phperkaigi-2023/proposal/db787adc-c855-4114-99b6-8c6958d47b42
+
+  PHPはWeb開発の際にとても便利なプログラミング言語です。  
+  多くのプロジェクトでは、OSSとして開発されているフレームワーク(FW)を利用していることでしょう。  
+  私達の日常の開発活動において、深く関わっていて「必要不可欠」とも言える存在について、1つ高いレベルで付き合えると、きっと嬉しいのではないでしょうか。
+
+  そこで、本書では「自分で作ってみる」ことを通じて、現代PHP風のFWの「中身」をかじってみます。  
+  自作FW開発を通じて、世の中のPHP製FWの内部コードを理解する助けにもなるはずです。
+
+  ## 対象読者
+  以下の経験・レベルを備える人を対象としています
+  * PHPでFWを用いたアプリケーション開発を経験したことがある
+
+  以下の課題を抱いている人におすすめします
+  * ここ最近のFWやPHPコミュニティにおけるトレンドをキャッチアップしたいと感じている
+  * いま利用しているFWについて、仕組みから深く理解をするためのヒントが欲しいと感じている
+  * アプリケーション開発において、FWとの適切な付き合い方・距離を考えたいと感じている
+
+topics: ["PHP", "PSR", "フレームワーク" ]
+published: false
+price: 0
+chapters:
+  - 0-1_introduction
+  - 0-2_about-our-fw
+  - 0-3_setup-env
+  - 1-0_cores
+  - 1-1-a_fig-psr-per
+  - 1-1_fw-summary
+  - 1-2_init-pj
+  - 1-2_psr-7-and-psr-17
+  - 1-4_application-frontcontroller
+  - 1-5_psr-15
+  - 1-6_routing
+  - 1-7_psr-11
+  - 2-0_mvc
+  - 2-1_actions
+  - 2-2_views
+  - 2-3_repositories
+  - 3-0_middlewares
+  - 3-1_error-handler
+  - 3-2_session-handler
+  - 3-3_csrf
+  - 4-0_http-messages
+  - 4-1_server-request
+  - 4-2_uri
+  - 4-3_stream
+  - 4-4_response copy
+  - 5-0_app
+  - 5-1_abount-our-app
+  - 5-2_setup-app
+  - 5-3_register-account
+  - 5-4_login-logout
+  - 5-5_post
+  - 5-6_view
+  - 5-7_edit
+  - 5-8_user-index
+  - 6-0_more-fw
+  - 6-1_middlewares
+  - 6-2_logging
+  - 6-3_event
+  - 6-4_simple-cache
+  - 6-5_http-client
+  - 7-0_outro
+  - 99-0_index
