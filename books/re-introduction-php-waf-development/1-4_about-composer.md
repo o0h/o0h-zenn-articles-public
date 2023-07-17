@@ -136,9 +136,177 @@ return array(
 
 #### PSR-0
 
-  
+オートローディングに関する規約として、PSRにはもう1つの定義があります。それが、PSR-0です。
+PSR-0は、PHP-FIGとその前身となるPHP Standards Groupにとって初めてまとめられた仕様・規約となります。そこから歴史が進んだ現在では、オートローディングに関してはPSR-4がデファクトスタンダードです。そのため、PSR-0は[非推奨となっており](https://github.com/php-fig/fig-standards/pull/341) 、新規に採用されることはほとんど無いでしょう。
+
+現在でもメンテナンスが続いているライブラリでPSR-0を採用しているものとしては、PHPMDが挙げられます[^phpmd-current]
+
+https://github.com/phpmd/phpmd/tree/2.13.0
+
+[^phpmd-current]: 執筆当時のバージョンである2.13.0の話になります
+
+歴史の長いライブラリやプロジェクト等ではPSR-0を採用していたり、Composerとしても機能をサポートしていることを踏まえ、本書でもPSR-0に触れていきます。
+
+PSR-0についての正式な仕様は、次のページで確認できます。
+
+https://www.php-fig.org/psr/psr-0/
+
+ ざっくりとした特徴としては、
+
+* 最上位の名前空間には、ベンダー名を設けること
+* 2階層目以下の名前空間は、0個以上の任意のものを設けることが出来る
+* クラス名(末端要素)に `_`を含めた場合、それはDIRECTORY SEPARATORとして扱われる
+
+というものです。
+
+PSR-4と比べると、
+
+* 名前空間と、ディレクトリ・パスの構造が必ずしも一致しない
+* ディレクトリを区切るために複数の方法を提供している
+
+という特徴があります。
+
+何故このような仕様になっているか、そしてPSR-4が求められるようになったのか？については、歴史にその答えを求める事ができます。
+
+ここで深く触れることは避けますが、代わりに参考になるであろう文献をリファレンスします。
+
+* [PSR\-4 Meta Document \- PHP\-FIG](https://www.php-fig.org/psr/psr-4/meta/)
+  * PSR-4が生まれた経緯やPSR-0との比較、この標準が解決したい問題について触れられています
+* [Towards A Package\-Oriented Autoloader](https://groups.google.com/g/php-fig/c/JdR-g8ZxKa8/m/6A2-YDYaIiAJ)
+  * PSR-0の課題を克服するための標準についての議論で、PSR-4の策定に繋がります
+  * このスレッドの件名通り、元々は「パッケージ志向のオートローダー」と呼んでいたことも、(PEAR時代の管理のあり方と比較して)興味深い点と言えるのではないでしょうか
+
+それでは、PSR-0によるオートロードの設定について具体例を交えてみていきます。
+
+以下のようなcomposer.jsonによる指定があったとします。
+
+```json
+{
+    "autoload": {
+        "psr-0": {
+            "O0h\\Psr0App\\": "src-psr0",
+            "O0h\\Psr0App2\\": "src-psr0"
+        }
+    }
+}
+```
+
+この場合、Composerが生成する名前空間ベースのautoloadファイル(`autoload_namespace.php`)は次のようになります
+
+```php
+return array(
+    'O0h\\Psr0App\\' => array($baseDir . '/src-psr0'),
+    'O0h\\Psr0App2\\' => array($baseDir . '/src-psr0'),
+);
+```
+
+PSR-4が「パッケージと名前空間の位置関係」を指定したのに対して、PSR-0では「パッケージ群が配置される(例えばベンダーごとの)ディレクトリ」を指定するようなイメージです。
+そのため、(この例でいうと) `src-psr0` + `vendor(O0h) / package(Psr0App, Psr0App2)`というディレクトリの用意が必要です。
+
+これに対応させるためには次のようにファイルを設置します
+
+| path                                          | FQCN                               |
+| --------------------------------------------- | ---------------------------------- |
+| ./src-psr0/O0h/Psr0App/Application.php        | O0h\Psr0App\Application            |
+| ./src-psr0/O0h/Psr0App/Models/UserModel.php   | O0h\Psr0App\Models_UserModel       |
+| ./src-psr0/O0h/Psr0App2/Application2.php      | O0h\Psr0App2\Psr0App2\Application2 |
+| ./src-psr0/O0h/Psr0App2/Models2/ItemModel.php | O0h\\Psr0App2\\Models2\\ItemModel  |
+
+ディレクトリの区切り文字を意味する `_` をFQCNに利用していない場合(`Psr0App2`の例)、シームレスにPSR-4に移行することが出来ます。例えば、`O0h\Psr0App2\Models2\ItemModel`についていえば、適切にcomposer.jsonのautoloadフィールドを指定してしまえば、PSR-4としてでも動作可能です。
+
+```json
+{
+    "autoload": {
+        "psr-4": {
+            "O0h\\Psr0App2\\": "src-psr0/O0h/Psr0App2"
+        }
+    }
+}
+```
+
+PSR-4に適応させるには、ディレクトリに移動を伴う形での対応も可能ですし、見た目的にはこちらの方が自然になることでしょう。`./src-psr0/O0h/Psr0App2/` を `./src-psr0` に移動して、composer.jsonの定義を以下のように書き換えます。
+
+```json
+{
+    "autoload": {
+        "psr-4": {
+            "O0h\\Psr0App2\\": "src-psr0/"
+        }
+    }
+}
+```
+
+
+
+実際にPSR-0からPSR-4に移行した例としては、Behatのv3.6.0での変更を挙げることが出来ます。
+この例では、ディレクトリの変更を伴わずにオートロードの方式だけを変更しています。
+こうした実例を見ることで、PEAR的な世界観・PSR-0時代の世界観・PSR-4時代の世界観、というのが地続きに変化してきたことが感じられるのではないでしょうか。
+
+https://github.com/Behat/Behat/pull/1170
+
+#### Classmap
+
+PSR-0/PSR-4が、ルールベースの名前解決を提供するのに対して、Classmapでのオートロードは、クラスファイルの位置を自明に扱うことによって解決手段を提供します。すなわち、「事前にクラスファイルとクラス名をクラスマップとして書き出しておき、Comoserのオートローダーは、その対応表を参照する」ような挙動です。
+
+まず、composer.json上にクラスマップの作成対象とするパス(ディレクトリでもファイルでも可)ディレクトリを指定します。
+
+```composer.json
+{
+		"autoload": {
+        "classmap": [
+            "src-classmap"
+        ]
+    }
+}
+```
+
+すると、対象のパス配下に含まれるファイルを操作して、ファイル名・FQCNの対応表が作成されます。それが、`vendor/composer/autoload_classmap.php` として書き出されます。
+
+以下は、実際に作成されたautoload_classmap(を一部改変したもの)です。namespaceやpathに規則性がなく、事前知識なしにはクラス名からファイルの配置位置を推測するのが難しいのではないでしょうか。
+
+
+```php
+<?php
+
+$vendorDir = dirname(__DIR__);
+$baseDir = dirname($vendorDir);
+
+return array(
+    'O0h\\SomeClass' => $baseDir . '/src-classmap/SubDirectory/NameSpacePrefixedClass.php',
+    'OtherClass' => $baseDir . '/src-classmap/SubDirectory/OtherClass.php',
+    'SomeClass' => $baseDir . '/src-classmap/SomeClass.php',
+);
+
+```
+
+あるいは、namespaceのprefixが付与されていないクラスをオートロードさせたいときにも、Classmapによる指定が有効です(こうしたテクニックはpolyfillのためにルートの名前空間に要素を設置したい場合などに用いることがあります)。
+
+#### Files
+
+5つあるComposerのオートロード形式のうち、最後が `Files`です。
+
+この形式だけは、他の4つとは機能面で大きく異なっています。他のタイプが「利用したクラスが読み込まれていなかった時に、対象ファイルを探しに行く(PHPの[クラスのオートローディング](https://www.php.net/manual/ja/language.oop5.autoload.php#language.oop5.autoload)機能を利用するもの)」のに対して、Filesはアプリケーションによるクラスの利用の有無に関わらず、先行的に指定されたファイルを読みに行きます。
+これにより、設定ファイルや関数定義といった、クラスとは関係のないものを読み込んでおくことができるのです。
+
+設定は、`files` フィールドに対象ファイルをリストで指定することで完了します。
+実例として、CakePHPの例を挙げてみましょう。
+
+https://github.com/cakephp/cakephp/blob/4.4.2/composer.json#L81-L87
+
+ご覧のように、関数を定義している `functions.php`や初期設定を行う`bootstrap.php`といった内容が記述されています。
+
+なお、読み込まれる順位としては、「自分自身が依存している(`files`に指定している)ファイル」よりも「自分の依存先のパッケージが依存しているファイル」の方が先となり、自身の指定しているファイルは最後に読み込まれることになります。
+そのため、もし明示的にあらゆるパッケージの依存ファイルよりも先行して処理させたい需要がある場合は、`vendor/autoload.php`よりも先に読み込む必要があります。
+
+
 
 # 主な機能2: パッケージの管理
+
+:::message
+この節は未作成です
+:::
+
+※ この節には、以下の内容を含む予定です
 
 * require 
 * install
@@ -154,7 +322,15 @@ return array(
 
 # 主な機能3: タスクランナー
 
+:::message
+この節は未作成です
+:::
+
 # その他の機能
+
+:::message
+この節は未作成です
+:::
 
 ## exec
 
