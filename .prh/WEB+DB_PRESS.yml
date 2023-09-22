@@ -2039,7 +2039,6 @@ rules:
     pattern:  /\bPodCast\b|\bpodcast\b|\bPodcast\b/
   - expected: ポリモーフィズム
     pattern:  /ポリモルフィズム|ポリモフィズム|ポルモルフィズム/
-    :qa
   - expected: $1マイクロ秒
     pattern:  /([0-9])μs/
   - expected: $1ミリ秒
