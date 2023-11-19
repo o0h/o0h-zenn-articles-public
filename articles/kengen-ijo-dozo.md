@@ -4,7 +4,7 @@ emoji: "⏩"
 type: "idea"
 topics: [組織開発, マネジメント]
 publication_name: "neinc_tech"
-published: false
+published: true
 ---
 
 こんにちは、NE会社に勤めます[きんじょう(@o0h\_)](https://twitter.com/o0h_)がお送りします。
