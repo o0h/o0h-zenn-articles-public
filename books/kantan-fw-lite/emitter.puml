@@ -1,0 +1,60 @@
+Bob -> Alice : hello
+@startuml
+circle "index.php" as index
+package \O0h\KiribanBbs {
+    class Application
+}
+package \O0h\KantanFwLite {
+    class BaseApplication <<abstract>>
+    class Http\Message\Response
+    class Http\Message\ResponseFactory
+    class Http\Emitter
+}
+
+index --> Application
+Application .|> BaseApplication
+BaseApplication --> Http\Message\ResponseFactory
+Http\Message\ResponseFactory ..> Http\Message\Response: create
+BaseApplication --> Http\Emitter
+Http\Emitter --> Http\Message\Response
+
+@enduml
+
+
+@startuml
+participant "index.php" as index
+box "App"
+participant Application
+end box
+box "FW"
+participant BaseApplication
+participant Response
+participant Emitter
+end box
+[-> index: http request
+index -> Application: 呼び出し
+Application -> BaseApplication: parentに実処理を委譲
+BaseApplication -> Response **:生成
+return
+BaseApplication -> Emitter: 結果の出力
+note over Response,Emitter
+Emitterは
+Responseオブジェクトを受け取って、
+その内容から
+HTTP レスポンスを組み立て・出力する
+end note
+Emitter ->]: http response
+@enduml
+
+
+@startuml
+package \Psr\Http\Message {
+    interface MessageInterface
+    interface RequestInterface
+    interface ResponseInterface
+    interface ServerRequestInterface
+}
+MessageInterface <|--  RequestInterface
+MessageInterface <|--  ResponseInterface
+MessageInterface <|--  ServerRequestInterface
+@enduml

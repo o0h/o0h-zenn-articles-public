@@ -1,0 +1,23 @@
+@startuml
+participant "index.php" as index
+box "App"
+participant Application
+end box
+box "FW"
+participant BaseApplication
+participant ServerRequest
+participant Action
+participant Response
+end box
+index -> ServerRequest **:生成
+return
+index -> Application: ServerRequestを渡す
+Application -> BaseApplication: parentに実処理を委譲
+BaseApplication -> Action **:生成
+BaseApplication -> Action: 実行
+Action -> Action: コンテンツの作成
+Action -> Response **:生成
+return
+Action -> Response: コンテンツのセット
+BaseApplication <-- Action: Response
+@enduml

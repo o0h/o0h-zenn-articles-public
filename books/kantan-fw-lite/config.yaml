@@ -1,0 +1,16 @@
+title: "60分で初めて作るPHPフレームワーク"
+summary: "「そこそこ今風！」なWebアプリケーションフレームワークの作成を通じて、PHPアプリ開発と親しくなりましょう"
+topics: [php, チュートリアル]
+published: false
+price: 0 # 有料の場合200〜5000
+# 本に含めるチャプターを順番に並べましょう
+chapters:
+  - introduction
+  - about-this
+  - setup
+  - create-project
+  - emitter
+  - action
+  - router
+  - middleware
+  - di-container
