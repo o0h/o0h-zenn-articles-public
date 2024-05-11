@@ -19,52 +19,52 @@ free: true
 どのテストケースでも問題ないですが、例として37行目にブレイクポイントを設定してみます。
 エディタ部分の左側、行番号にカーソルを乗せてください。
 薄っすらと赤い丸が出てくるので、それをクリックします。
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-33-59.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-33-59.png)
 
 そして、メソッド定義がされている箇所 **以外** を右クリックして、今度は `Debug 'Dotenv(PHPUnit)`をクリックします。
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-35-39.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-35-39.png)
 
 コードの実行が、ブレイクポイントの箇所に差し掛かって「一時停止」されます！
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-38-00.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-38-00.png)
 
 実際にここに至るまでのフレームが、スタックされて確認できます。
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-38-52.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-38-52.png)
 
 また、同フレーム上の一時変数などの内容が確認できます。
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-39-28.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-39-28.png)
 
 インスタンスや配列は、トグルして中身の要素に踏み込んで確認することも可能です。
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-40-22.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-40-22.png)
 
 実行をコード1行分進めるため、「Step Over」をしてみましょう。
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-40-56.png)
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-41-34.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-40-56.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-41-34.png)
 
 中に潜るには「Step Into」です！
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-42-08.png)
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-42-21.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-42-08.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-42-21.png)
 
 メソッドの最終行でStep Overを押すと、呼び出し元(の次の行)に戻っていきます。
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-43-02.png)
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-43-19.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-43-02.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-43-19.png)
 
 確認したいことが確認できたら、「Resume Program」でプログラムの実行を復帰させます。
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-53-39.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-53-39.png)
 
 同様に、「Step Out」でも遊んでみましょう。
 例えば、165行目の`$dotenv->load();` で処理を止めてみます。
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-58-43.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-58-43.png)
 
 ここから2段階ほどStep Intoでもぐり、`store->read()`の内部まで進めます
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-59-55.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-59-55.png)
 
 そしてStep Outを実行すると、
 `$this->parser->parse($this->store->read())` の `store->read()` の実行元である`parser->parse()`の所に進むことになります。
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-09-00-30.png)A
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-09-00-30.png)A
 
 40行目 `$dotenv->load();` までステップを進めて、そこでStep Intoを1回実行します。
 そこからStep Outを押してみてください。
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-08-50-05.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-08-50-05.png)
 
 ## フレームを行ったり来たり
 ここまでは実際にプログラムの実行位置を操作して、その内容を確認してきました。  
@@ -72,16 +72,16 @@ free: true
 フレームを移動してみましょう
 
 先程の `FileStore::read()`まで来た状態で、Threadsのウィンドウを確認してください
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-09-06-30.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-09-06-30.png)
 
 ここに表示されている、Frameのスタックから任意の箇所をクリックすると・・・
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-09-07-10.png)
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-09-07-45.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-09-07-10.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-09-07-45.png)
 
 フレームを自在に移動できます！
 
 もちろん、実際に位置しているフレームとは異なる箇所を確認している時でも、一時変数の確認は(ある程度)可能です。
-![](/./images/2-2_hello-break/2-2_hello-break_2024-05-11-09-08-21.png)
+![](/images/2-2_hello-break/2-2_hello-break_2024-05-11-09-08-21.png)
 
 
 さぁ、これで基本的なステップ実行に触れることができました！ 
