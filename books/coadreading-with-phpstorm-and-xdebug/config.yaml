@@ -1,4 +1,4 @@
-title: "XdebugとPhpStormを使って「難しめ」なコードを読んでみよう！"
+title: "[WIP]XdebugとPhpStormを使って「難しめ」なコードを読んでみよう！"
 summary: |-
   PHPで作成されたソフトウェアの、ソースコードを読んでみましょう！
   OSSプロジェクトのコードを例にとって、チュートリアル仕立てで実際にコードの読解を進めていきます。
@@ -6,7 +6,7 @@ summary: |-
   新しいプロジェクトでコードに触れる際や、自身が管理するものよりも複雑なものに挑む助けとなる──そんな味方が、ここに居ますよ
 
 topics: ["PHP", "PhpStorm", "Xdebug"]
-published: false
+published: true
 price: 0
 # 本に含めるチャプターを順番に並べましょう
 chapters:
@@ -15,3 +15,6 @@ chapters:
   - 1-2_hello-step
   - 1-3_step-basic
   - 2-0_cover
+  - 2-1_run-test
+  - 2-2_hello-break
+  - 2-3_reading-phpunit
