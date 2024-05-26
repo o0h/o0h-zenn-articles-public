@@ -1,7 +1,8 @@
 {
-    "pasteImage.basePath": "${projectRoot}",
-    "pasteImage.insertPattern": "${imageSyntaxPrefix}/${imageFilePath}${imageSyntaxSuffix}",
-    "pasteImage.path": "${projectRoot}/images/${currentFileNameWithoutExt}",
-    "editor.wordWrap": "on",
-    "pasteImage.prefix": ""
+  "pasteImage.basePath": "${projectRoot}",
+  "pasteImage.insertPattern": "${imageSyntaxPrefix}/${imageFilePath}${imageSyntaxSuffix}",
+  "pasteImage.path": "${projectRoot}/images/${currentFileNameWithoutExt}",
+  "editor.wordWrap": "on",
+  "pasteImage.prefix": "",
+  "cSpell.words": ["Xdebug"]
 }

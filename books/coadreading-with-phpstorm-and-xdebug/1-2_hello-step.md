@@ -7,7 +7,34 @@ free: true
 文章での説明だけだと、あまりピンと来ないですね。実例を見てみましょう
 
 例えば、こんなコードがあったとします。
-![](/images/1-1_hello-step/2024-05-10-02-46-50.png)
+(src: https://github.com/o0h/xdebug-phpstorm-handson/blob/main/bits/1_step-besic.php)
+
+```php
+<?php
+
+function deepHoge()
+{
+    echo 'deep, and..' . PHP_EOL;
+    echo 'deepHoge' . PHP_EOL;
+}
+function fuga()
+{
+    echo 'fuga' . PHP_EOL;;
+}
+function hogeFuga()
+{
+    deepHoge();
+    fuga();
+}
+function main()
+{
+    echo 'hoge' . PHP_EOL;
+    fuga();
+    hogeFuga();
+}
+
+main();
+```
 
 これを実際に動かしながら、ステップ実行によって「1ステップずつ確認する」様子を見てみましょう。
 

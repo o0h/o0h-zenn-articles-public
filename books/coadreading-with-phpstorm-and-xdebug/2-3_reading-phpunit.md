@@ -11,22 +11,23 @@ free: true
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-09-15-56.png)
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-09-15-22.png)
 
-
 まずは、「具体となるテストケースが、どこから呼ばれているのか」を遡っていきます。
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-09-22-33.png)
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-09-22-47.png)
 
 どうやら、`Framework\TestCase::runTest()`が実行元らしいです。
 しかし・・・
+
 ```php
  $testResult = $this->{$this->methodName}(...$testArguments);
- ```
- 動的なメソッド呼び出しですね！ちょっと複雑です。
+```
 
- この`methodName`の内容を知る必要がありますが、フレームにおける一時変数の確認ができると容易です。
+動的なメソッド呼び出しですね！ちょっと複雑です。
 
- `$this`のプロパティを展開して
- ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-09-25-37.png)
+この`methodName`の内容を知る必要がありますが、フレームにおける一時変数の確認ができると容易です。
+
+`$this`のプロパティを展開して
+![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-09-25-37.png)
 
 `->methodName`を探してみてください
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-09-26-15.png)
@@ -34,15 +35,12 @@ free: true
 今回の設定だと、`testLargeDotenvLoadsEnvironmentVars` ということで、テストケース名(メソッド名)が入っていることが確認できました！
 「テストケースの実行を行う」のが、「テストクラスのオブジェクトに、定義されているメソッドの呼び出し」で実現されていることが分かります。なんてことない、オブジェクト指向プログラミングですね！
 
-
 やや余談ですが、プロパティや変数を右クリック -> `Copy Value`で値をクリップボードにコピーできます。
 しばしば便利ですので、覚えておいて損はないでしょう
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-09-28-27.png)
 
-
 さて、「テストケース(メソッド名)が確定している」ということは、「テストケース(の一覧)を見つけ出した人は更に外側にいる」という判断ができます。
 そんな理由で、更に遡っていきましょう！
-
 
 手前のフレームを見ても、どうやら同じクラス名っぽい感じです。すなわち、`methodName`の指定が終わった `$this`として、同じ状態が続いているのではないか？と推測できます。
 そんな仮説を思い浮かべながら、確認をしてみましょう。
@@ -57,7 +55,6 @@ free: true
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-12-33-43.png)
 
 この `$test` が、どこで・どうやって作られているのかが気になってきましたね。
-
 
 いくつか遡っていって、 `\PHPUnit\Framework\TestSuite::collect()` のフレームにたどり着きます。  
 ここで初めて `$test` が出てきました！
@@ -111,17 +108,17 @@ https://php.net/Traversable
 > そのクラスの中身が foreach を使用してたどれるかどうかを検出するインターフェイスです。
 
 先程の問、「なぜ$thisをグルグルやるとTestCaseが取り出せるのか？」という答えの半分が、ここにありました。
-「foreachで使えるようにする」というInterfadeを実装しているからです。  
+「foreachで使えるようにする」というInterfadeを実装しているからです。
 
 では、残りの半分、「出てくるのが何故TestCaseなのか」を覗いていきます。
 
-マニュアルには 
->  IteratorAggregate あるいは Iterator を実装しなければなりません。
+マニュアルには
+
+> IteratorAggregate あるいは Iterator を実装しなければなりません。
 
 と記載されており、先程のダイアグラムやCopilotの回答から、 `IteratorAggregate::getIterator()` が肝だということが分かっています。
 
 そしたら、 `TestSuite::getIterator()` の内容を確認していくのが次のステップとなります。
-
 
 クラスに実装されているメソッドやプロパティについては、 「Stgructure」の機能を用いて容易に確認できます。
 
@@ -138,7 +135,6 @@ Structureのエリアにフォーカスを当てて、キーボードを叩け�
 
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-13-26-16.png)
 
-
 このクラスの内容を見ていきましょう。
 「cmdを押しながらクリック」で、そのクラスの定義元に移動ができます。
 
@@ -149,7 +145,6 @@ Structureのエリアにフォーカスを当てて、キーボードを叩け�
 簡単な確認方法は、 「Quick Definitation」です。
 確認したい内容にカーソルを当てて、 `opt + space` を押すと、定義元のソースコードがポップアップで表示されます。
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-13-29-05.png)
-
 
 なるほど、 `$this->tests` を返しているだけのシンプルなアクセサだ！！ということが分かりました。
 
@@ -182,10 +177,8 @@ cmd + クリックで、まず `$this->tests` の宣言箇所にジャンプし�
 これは、「行に対するブレイクポイント」と「メソッドに対するブレイクポイント」の違いです。  
 必要に応じて使い分けてみてください。
 
-
 さて、新しい観点でブレイクポイントを設置したので、いったん頭の中もクリアしてはいかがでしょう？
 デバッグ実行のResumeないしStopを実行して、再度デバッグ実行でテストを叩くことにします。
-
 
 `addTest()` で最初に止まりました！
 
@@ -208,18 +201,15 @@ cmd + クリックで、まず `$this->tests` の宣言箇所にジャンプし�
 `foreach` のイテレーションで、一時変数 `$method` があるみたいです。
 このループの大本であるメソッドも `publicMethodsInTestClass` という名前になっており、かなり答えに近づいてきたのではないか？？？とワクワクします。
 
-
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-13-55-13.png)
 
 `filterAndSortMethods()` 最終章を予感させる響き！
-
 
 ココの引数である `$class` 及び `$filter` の中身が気になって仕方ないので、実際にそれを使っている箇所まで時を進めます。
 「Run to cursor」機能が便利です。目的の行の上で右クリック、もしくは行番号の右隣にマウスを当てるとﾌﾜｯとメニューが浮かび上がってくるのを捕まえてください。
 (もちろん、`filterAndSortMethods`にブレイクポイントを設置して、デバッグ実行全体をやり直してもOKです)
 
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-13-56-36.png)
-
 
 ・・・しかしながら、 `$filter = 1` となっています。
 `$class->getMethods(1)` も、PHPの標準Reflectionですが、「1でフィルタをする」とは・・・？
@@ -232,12 +222,15 @@ cmd + クリックで、まず `$this->tests` の宣言箇所にジャンプし�
 これでは「どんなメソッドが入っているか」がわかりにくいので、少し工夫します。
 
 「Console」をクリックして、フレーム内で「対話実行」ができます。
-![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-14-27-06.png)
+![](/images/2-3_reading-phpunit/debug-console.png)
+![](/images/2-3_reading-phpunit/debug-console-input.png)
 
 ReflectionMethodクラスのnameを取り出す処理を書いて、実行してみましょう
+
 ```php
 return array_map(fn ($method) => $method->name, $methods);
 ```
+
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-14-48-26.png)
 
 結果が出力されます。
@@ -251,7 +244,6 @@ return array_map(fn ($method) => $method->name, $methods);
 先程のフレームに戻ると、 `isTestMethod()` というソレッポイ名前のメソッドが呼ばれていることに気づきました。
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-14-52-38.png)
 
-
 `isTestMethod()`の内容は、比較的読みやすいコードになっているのではないでしょうか？
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-14-53-41.png)
 
@@ -260,7 +252,6 @@ return array_map(fn ($method) => $method->name, $methods);
 
 今回の場合、ループの中で何度も何度も呼ばれる事がありそうなので、毎度停止されることに煩わしさを覚えるかも知れません。
 そんなときは、「実行を一時停止しないで、ログを出力する」という機能を使います。
-
 
 ブレイクポイントを設定して
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-15-01-58.png)
@@ -272,6 +263,7 @@ return array_map(fn ($method) => $method->name, $methods);
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-15-02-20.png)
 
 例えば、次のような式です。
+
 ```php
 '====[not test]' . $method->getName()
 ```
@@ -283,16 +275,12 @@ Doneを押して、再度デバッグ実行を行ってください。
 実行結果に、ログが残っています！！！
 ![](/images/2-3_reading-phpunit/2-3_reading-phpunit_2024-05-11-15-05-35.png)
 
+---
 
-
-------------
 ここまでで、今回のお題に適切に回答するための材料が揃ったのではないでしょうか？
 
 とても簡単でしたね！
 
-
 ## 練習問題
+
 メソッド名ではなく、Attributeでテストケースを定義している場合は、どのように判別されているでしょう？
-
-
-
