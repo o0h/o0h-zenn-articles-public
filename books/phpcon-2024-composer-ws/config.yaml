@@ -1,0 +1,33 @@
+title: "作って理解するComposer <クイックコース>"
+level: 4
+summary: "Composerの主要機能を、自作することで味わってみようというハンズオンです。PHP Conference Japan 2024で実施するワークショップの資料を兼ねています。"
+topics: ["php", "handson"]
+published: true
+price: 0 # 有料の場合200〜5000
+# 本に含めるチャプターを順番に並べましょう
+chapters:
+  - 0_intro
+  - 1_about_handson
+  - 1_setup
+  - 2_work1_0_intro
+  - 2_work1_1_about
+  - 2_work1_2_step1
+  - 2_work1_2_step2
+  - 2_work1_2_step3
+  - 2_work1_2_step4
+  #  - 2_work1_3_exercise
+  - 3_work2_0_intro
+  - 3_work2_1_about
+  - 3_work2_2_step1
+  - 3_work2_2_step2
+  - 3_work2_2_step3
+  - 3_work2_2_step4
+  #  - 3_work2_3_exercise
+  - 4_work3_0_intro
+  - 4_work3_1_about
+  - 4_work3_2_step1
+  - 4_work3_2_step2
+  - 4_work3_2_step3
+  - 4_work3_2_step4
+  #  - 4_work3_3_exercise
+  - 5_outro
