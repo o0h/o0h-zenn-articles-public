@@ -1,3 +1,3 @@
 ---
-title: "W-②: STEP-3 composer.jsonの作成"
+title: "├ W-②: STEP-3 composer.jsonの作成"
 ---
