@@ -6,8 +6,8 @@ price: 0 # 有料の場合200〜5000
 # 本に含めるチャプターを順番に並べましょう
 chapters:
   - 0_intro
-  - 1_setup
   - 1_about_handson
+  - 1_setup
   - 2_work1_0_intro
   - 2_work1_1_about
   - 2_work1_2_step1_a
