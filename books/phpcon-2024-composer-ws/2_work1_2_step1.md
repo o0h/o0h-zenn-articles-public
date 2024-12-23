@@ -51,7 +51,7 @@ _composer.jsonがなくてエラーになっている様子_
 /* === STEP-1 ココまで === */
 ```
 
-### 1. `/opt/work/composer.lock`にある`.lock`ファイルを読み込んでください。
+### 1. `/opt/work/1_install/composer.lock`にある`.lock`ファイルを読み込んでください。
 
 内容が安全であることが担保できていて、ローカルにあるファイルを読み込むには `file_get_contents()`関数で充分でしょう。
 
