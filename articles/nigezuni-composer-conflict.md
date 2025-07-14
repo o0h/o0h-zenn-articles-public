@@ -3,7 +3,7 @@ title: "今こそ徹底入門！Composerのコンフリクト"
 emoji: "🤯"
 type: "tech"
 topics: ["composer", "パッケージ管理"]
-published: false
+published: true
 ---
 
 ```sh
@@ -39,6 +39,8 @@ https://speakerdeck.com/o0h/phpcon-2025?slide=62
 実際、この記事を書こうと思ったのは  
 「あんなに内部実装について深堀りしたんだから、昔からずっと苦手だったコンフリクト問題も、今なら分かるのではないか！？」  
 という背景もあります。
+
+資料内でも触れている「Rule」や「DependencySolverの問題解決手順」について知ると、なんとなくコンフリクト時のメッセージが読みやすく感じられるはずです。
 
 ## 前提の理解・「パッケージを決定する」とは何か？
 ※ 「Packageとは何か？」については、例えば公式ドキュメントの[Libraries \- Composer](https://getcomposer.org/doc/02-libraries.md#every-project-is-a-package)を参照してください
