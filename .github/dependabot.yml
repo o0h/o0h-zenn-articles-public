@@ -9,7 +9,15 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    # リリース直後のバージョンは避け、公開から一定期間経ったものだけを対象にする
+    cooldown:
+      default-days: 7
     groups:
       dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      security:
+        applies-to: security-updates
         patterns:
           - "*"
